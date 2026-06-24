@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精錬素材シミュレーター</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border: 1px solid #e3e6e8;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .title-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #333;
+        }
+        h1 {
+            font-size: 18px;
+            margin: 0;
+            color: #111;
+        }
+        .inputs-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .input-block {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        /* 入力ボックス（上下矢印非表示） */
+        input[type="number"] {
+            background: #fff;
+            border: 1px solid #ccc;
+            color: #000;
+            padding: 8px 10px;
+            font-size: 15px;
+            border-radius: 4px;
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* ヘッダ内入力ボックス用 */
+        .th-input {
+            width: 40px;
+            padding: 3px 5px;
+            font-size: 13px;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+            text-align: center;
+            font-weight: bold;
+            background: #fff;
+            margin-left: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 6px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f1f3f5;
+            color: #495057;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        @media (max-width: 600px) { th { white-space: normal; } }
+        tr:hover { background-color: #fbfbfb; }
+        .best-row { background-color: #e6f4ea; }
+        .best-row:hover { background-color: #d8eedf; }
+        .rank-top { color: #1e7e34; font-weight: bold; }
+
+        .act {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .act-gather { background: #e3f2fd; color: #0d47a1; }
+        .act-buy    { background: #fff3e0; color: #e65100; }
+        .act-sell   { background: #fce4ec; color: #c2185b; }
+        .act-craft  { background: #e8f5e9; color: #1b5e20; }
+        .act-none   { background: #f5f5f5; color: #9e9e9e; }
+
+        /* 下部設定＆式エリア */
+        .formula-section {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #e3e6e8;
+        }
+        .formula-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 15px;
+        }
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .formula-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .formula-box strong {
+            color: #495057;
+            display: block;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 3px;
+        }
+        .cfg-input {
+            width: 45px;
+            padding: 2px 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .prob-row {
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn:hover { background: #eee; }
+        .btn-save {
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+            font-weight: bold;
+        }
+        .btn-save:hover { background: #218838; }
+        .calc-result-area {
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
+            font-size: 11px;
+            color: #555;
+        }
+        .save-notice {
+            font-size: 11px;
+            color: #28a745;
+            margin-right: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="title-area">
+        <h1>精錬素材シミュレーター</h1>
+        <div>
+            <span id="save-msg" class="save-notice">保存しました</span>
+            <button class="btn btn-save" onclick="saveToCache()">設定をブラウザに保存</button>
+        </div>
+    </div>
+
+    <div class="inputs-wrapper">
+        <div class="input-block">
+            <label>鉱石 市場価格</label>
+            <input type="number" id="price-ore" value="250" min="0" oninput="calc()">
+        </div>
+        <div class="input-block">
+            <label>炭粉 市場価格</label>
+            <input type="number" id="price-coal" value="120" min="0" oninput="calc()">
+        </div>
+        <div class="input-block">
+            <label>完成品 市場価格</label>
+            <input type="number" id="price-product" value="2000" min="0" oninput="calc()">
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">順位</th>
+                <th style="width: 24%;">鉱石 (<input type="number" id="req-ore" class="th-input" value="8" oninput="calc()">個)</th>
+                <th style="width: 24%;">炭粉 (<input type="number" id="req-coal" class="th-input" value="1" oninput="calc()">個)</th>
+                <th style="width: 18%;">完成品</th>
+                <th style="width: 12%;">消費フォーカス</th>
+                <th style="width: 12%;">1フォーカスあたり</th>
+            </tr>
+        </thead>
+        <tbody id="result-lines">
+            </tbody>
+    </table>
+
+    <div class="formula-section">
+        <div class="formula-title">期待値・消費フォーカス設定（数値変更可能）</div>
+        <div class="formula-grid">
+            
+            <div class="formula-box">
+                <div>
+                    <strong>完成品 期待値＆制作フォーカス</strong>
+                    制作消費: <input type="number" id="focus-refine" class="cfg-input" value="10" oninput="calc()"> フォーカス<br>
+                    <div id="prob-inputs" style="margin-top: 8px;">
+                        </div>
+                    <button class="btn" style="padding:2px 6px; font-size:10px; margin-top:5px;" onclick="addProbRow()">+ 行追加</button>
+                </div>
+                <div class="calc-result-area">
+                    消費に対する個数: <strong id="exp-prod-text" style="display:inline;">1.802</strong> 個<br>
+                    1フォーカスあたり: <strong id="unit-prod-text" style="display:inline;">0.180</strong> 個
+                </div>
+            </div>
+
+            <div class="formula-box">
+                <div>
+                    <strong>鉱石 期待値＆採取フォーカス</strong>
+                    採取消費: <input type="number" id="focus-ore" class="cfg-input" value="20" oninput="calc()"> フォーカス<br>
+                    ベース: <input type="number" id="ore-min" class="cfg-input" value="10" oninput="calc()"> ～ 
+                    <input type="number" id="ore-max" class="cfg-input" value="12" oninput="calc()"> 個<br>
+                    確率: <input type="number" id="ore-rate" class="cfg-input" value="30" oninput="calc()"> % で<br>
+                    追加: +<input type="number" id="ore-bonus" class="cfg-input" value="1" oninput="calc()"> 個
+                </div>
+                <div class="calc-result-area">
+                    消費に対する個数: <strong id="exp-ore-text" style="display:inline;">11.30</strong> 個<br>
+                    1フォーカスあたり: <strong id="unit-ore-text" style="display:inline;">0.565</strong> 個<br>
+                    <span id="note-ore-need">鉱石8個分</span> ≒ <strong id="need-ore-focus" style="display:inline;">14.2</strong> 規制
+                </div>
+            </div>
+
+            <div class="formula-box">
+                <div>
+                    <strong>炭粉 期待値＆製作フォーカス</strong>
+                    製作消費: <input type="number" id="focus-coal" class="cfg-input" value="20" oninput="calc()"> フォーカス<br>
+                    固定: <input type="number" id="coal-qty" class="cfg-input" value="20" style="width:60px;" oninput="calc()"> 個
+                </div>
+                <div class="calc-result-area" style="margin-top: 35px;">
+                    消費に対する個数: <strong id="exp-coal-text" style="display:inline;">20.0</strong> 個<br>
+                    1フォーカスあたり: <strong id="unit-coal-text" style="display:inline;">1.000</strong> 個<br>
+                    <span id="note-coal-need">炭粉1個分</span> = <strong id="need-coal-focus" style="display:inline;">1.0</strong> 規制
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // デフォルト確率データ
+    let productProbs = [[1, 46.8], [2, 33.8], [3, 13.0], [4, 5.8], [5, 0.8]];
+
+    // キャッシュ（LocalStorage）からデータを読み込む
+    function loadFromCache() {
+        const cached = localStorage.getItem('refine_sim_config');
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                document.getElementById('price-ore').value = data.priceOre;
+                document.getElementById('price-coal').value = data.priceCoal;
+                document.getElementById('price-product').value = data.priceProduct;
+                document.getElementById('req-ore').value = data.reqOre || 8;
+                document.getElementById('req-coal').value = data.reqCoal || 1;
+                document.getElementById('focus-refine').value = data.focusRefine;
+                document.getElementById('focus-ore').value = data.focusOre;
+                document.getElementById('focus-coal').value = data.focusCoal;
+                document.getElementById('ore-min').value = data.oreMin;
+                document.getElementById('ore-max').value = data.oreMax;
+                document.getElementById('ore-rate').value = data.oreRate;
+                document.getElementById('ore-bonus').value = data.oreBonus;
+                document.getElementById('coal-qty').value = data.coalQty;
+                if (data.productProbs) productProbs = data.productProbs;
+            } catch (e) {
+                console.error("Cache load error", e);
+            }
+        }
+    }
+
+    // キャッシュへ保存
+    function saveToCache() {
+        const data = {
+            priceOre: parseFloat(document.getElementById('price-ore').value),
+            priceCoal: parseFloat(document.getElementById('price-coal').value),
+            priceProduct: parseFloat(document.getElementById('price-product').value),
+            reqOre: parseFloat(document.getElementById('req-ore').value),
+            reqCoal: parseFloat(document.getElementById('req-coal').value),
+            focusRefine: parseFloat(document.getElementById('focus-refine').value),
+            focusOre: parseFloat(document.getElementById('focus-ore').value),
+            focusCoal: parseFloat(document.getElementById('focus-coal').value),
+            oreMin: parseFloat(document.getElementById('ore-min').value),
+            oreMax: parseFloat(document.getElementById('ore-max').value),
+            oreRate: parseFloat(document.getElementById('ore-rate').value),
+            oreBonus: parseFloat(document.getElementById('ore-bonus').value),
+            coalQty: parseFloat(document.getElementById('coal-qty').value),
+            productProbs: productProbs
+        };
+        localStorage.setItem('refine_sim_config', JSON.stringify(data));
+        
+        // 保存メッセージの通知表示
+        const msg = document.getElementById('save-msg');
+        msg.style.display = 'inline';
+        setTimeout(() => { msg.style.display = 'none'; }, 2000);
+    }
+
+    function renderProbs() {
+        const div = document.getElementById('prob-inputs');
+        div.innerHTML = "";
+        productProbs.forEach((item, i) => {
+            div.innerHTML += `
+                <div class="prob-row">
+                    <span>${item[0]}個:</span>
+                    <span>
+                        <input type="number" class="cfg-input" step="0.1" value="${item[1]}" oninput="updateProbValue(${i}, this.value)"> %
+                        <a href="#" onclick="removeProbRow(${i}); return false;" style="color:red; font-size:10px; margin-left:2px;">×</a>
+                    </span>
+                </div>`;
+        });
+    }
+
+    window.updateProbValue = function(index, val) {
+        productProbs[index][1] = parseFloat(val) || 0;
+        calc();
+    };
+
+    function addProbRow() {
+        const nextQty = productProbs.length > 0 ? productProbs[productProbs.length - 1][0] + 1 : 1;
+        productProbs.push([nextQty, 0]);
+        renderProbs();
+        calc();
+    }
+
+    function removeProbRow(index) {
+        productProbs.splice(index, 1);
+        renderProbs();
+        calc();
+    }
+
+    function calc() {
+        const pOre = parseFloat(document.getElementById('price-ore').value) || 0;
+        const pCoal = parseFloat(document.getElementById('price-coal').value) || 0;
+        const pProd = parseFloat(document.getElementById('price-product').value) || 0;
+
+        // 可変必要素材数
+        const reqOre = parseFloat(document.getElementById('req-ore').value) || 0;
+        const reqCoal = parseFloat(document.getElementById('req-coal').value) || 0;
+
+        // 設定エリアの可変フォーカス値
+        const settingFocusOre = parseFloat(document.getElementById('focus-ore').value) || 0;
+        const settingFocusCoal = parseFloat(document.getElementById('focus-coal').value) || 0;
+        const settingFocusRefine = parseFloat(document.getElementById('focus-refine').value) || 0;
+
+        // 1. 完成品期待値
+        let expProduct = 0;
+        productProbs.forEach(item => { expProduct += item[0] * (item[1] / 100); });
+        document.getElementById('exp-prod-text').innerText = expProduct.toFixed(3);
+        document.getElementById('unit-prod-text').innerText = settingFocusRefine > 0 ? (expProduct / settingFocusRefine).toFixed(3) : "0.000";
+        const totalProductValue = expProduct * pProd;
+
+        // 2. 鉱石期待値
+        const oMin = parseFloat(document.getElementById('ore-min').value) || 0;
+        const oMax = parseFloat(document.getElementById('ore-max').value) || 0;
+        const oRate = parseFloat(document.getElementById('ore-rate').value) || 0;
+        const oBonus = parseFloat(document.getElementById('ore-bonus').value) || 0;
+        const expOre = ((oMin + oMax) / 2) + (oBonus * (oRate / 100));
+        document.getElementById('exp-ore-text').innerText = expOre.toFixed(2);
+        document.getElementById('unit-ore-text').innerText = settingFocusOre > 0 ? (expOre / settingFocusOre).toFixed(3) : "0.000";
+
+        // 3. 炭粉期待値
+        const expCoal = parseFloat(document.getElementById('coal-qty').value) || 0;
+        document.getElementById('exp-coal-text').innerText = expCoal.toFixed(1);
+        document.getElementById('unit-coal-text').innerText = settingFocusCoal > 0 ? (expCoal / settingFocusCoal).toFixed(3) : "0.000";
+
+        // 必要フォーカスの計算（ヘッダの可変個数を反映）
+        const focusForOre = expOre > 0 ? (reqOre / expOre) * settingFocusOre : 0; 
+        const focusForCoal = expCoal > 0 ? (reqCoal / expCoal) * settingFocusCoal : 0;
+        const focusRefine = settingFocusRefine;
+
+        // 下部注釈の文字更新
+        document.getElementById('note-ore-need').innerText = `鉱石${reqOre}個分`;
+        document.getElementById('note-coal-need').innerText = `炭粉${reqCoal}個分`;
+        document.getElementById('need-ore-focus').innerText = focusForOre.toFixed(1);
+        document.getElementById('need-coal-focus').innerText = focusForCoal.toFixed(1);
+
+        const patterns = [
+            {
+                visual: ['<span class="act act-gather">採る</span>', '<span class="act act-gather">作る</span>', '<span class="act act-craft">作る</span>'],
+                focus: focusForOre + focusForCoal + focusRefine,
+                yield: totalProductValue - 0
+            },
+            {
+                visual: ['<span class="act act-gather">採る</span>', '<span class="act act-buy">買う</span>', '<span class="act act-craft">作る</span>'],
+                focus: focusForOre + focusRefine,
+                yield: totalProductValue - (pCoal * reqCoal)
+            },
+            {
+                visual: ['<span class="act act-buy">買う</span>', '<span class="act act-gather">作る</span>', '<span class="act act-craft">作る</span>'],
+                focus: focusForCoal + focusRefine,
+                yield: totalProductValue - (pOre * reqOre)
+            },
+            {
+                visual: ['<span class="act act-buy">買う</span>', '<span class="act act-buy">買う</span>', '<span class="act act-craft">作る</span>'],
+                focus: focusRefine,
+                yield: totalProductValue - ((pOre * reqOre) + (pCoal * reqCoal))
+            },
+            {
+                visual: ['<span class="act act-sell">売る</span>', '<span class="act act-none">ー</span>', '<span class="act act-buy">買う</span>'],
+                focus: focusForOre,
+                yield: (pOre * reqOre)
+            },
+            {
+                visual: ['<span class="act act-none">ー</span>', '<span class="act act-sell">売る</span>', '<span class="act act-buy">買う</span>'],
+                focus: focusForCoal,
+                yield: (pCoal * reqCoal)
+            }
+        ];
+
+        patterns.forEach(p => { p.efficiency = p.focus > 0 ? p.yield / p.focus : 0; });
+        patterns.sort((a, b) => b.efficiency - a.efficiency);
+
+        const tbody = document.getElementById('result-lines');
+        tbody.innerHTML = "";
+        patterns.forEach((p, index) => {
+            const tr = document.createElement('tr');
+            if (index === 0) tr.className = "best-row";
+            const rankStr = index === 0 ? "★ 1位" : `${index + 1}位`;
+            tr.innerHTML = `
+                <td class="${index === 0 ? 'rank-top' : ''}">${rankStr}</td>
+                <td>${p.visual[0]}</td>
+                <td>${p.visual[1]}</td>
+                <td>${p.visual[2]}</td>
+                <td>${p.focus.toFixed(1)}</td>
+                <td style="font-weight: bold; color: ${index === 0 ? '#1e7e34' : '#333'};">${p.efficiency.toFixed(1)} ルーノ</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 起動時処理
+    loadFromCache();
+    renderProbs();
+    calc();
+</script>
+
+</body>
+</html>

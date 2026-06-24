@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタレゾ ツール置き場</title>
+<style>
+  :root{
+    --bg:#f4f1ea;
+    --paper:#fbf9f3;
+    --ink:#2b2b2b;
+    --muted:#7a7a7a;
+    --line:#ddd6c6;
+    --accent:#9a4b2e;
+    --num:#c4b598;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.7;
+    padding:0 18px 90px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+
+  /* masthead */
+  header{padding:40px 0 0}
+  .kicker{
+    font-size:11px;letter-spacing:.32em;color:var(--accent);
+    font-weight:700;text-transform:uppercase;
+  }
+  header h1{font-size:30px;font-weight:800;letter-spacing:.01em;margin-top:10px}
+  header p{font-size:14px;color:var(--muted);margin-top:8px}
+  .rule{height:2px;background:var(--ink);margin:20px 0 0}
+
+  /* section label */
+  .section-label{
+    display:flex;align-items:center;gap:12px;
+    margin:26px 0 16px;
+    font-size:12px;letter-spacing:.18em;color:var(--muted);font-weight:700;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* list */
+  .list{display:flex;flex-direction:column;gap:12px}
+  .card{
+    display:flex;align-items:center;gap:18px;
+    text-decoration:none;color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--num);
+    border-radius:7px;
+    padding:18px 22px;
+    transition:border-color .14s, box-shadow .14s, transform .14s;
+  }
+  .card:hover{
+    border-left-color:var(--accent);
+    box-shadow:0 4px 14px rgba(70,55,30,.10);
+    transform:translateY(-2px);
+  }
+  .num{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:22px;font-weight:700;color:var(--num);
+    min-width:26px;text-align:center;line-height:1;
+  }
+  .card:hover .num{color:var(--accent)}
+  .body{flex:1;min-width:0}
+  .name{font-size:17px;font-weight:700;display:block}
+  .desc{font-size:13px;color:var(--muted);line-height:1.65;display:block;margin-top:3px}
+  .go{
+    flex-shrink:0;white-space:nowrap;
+    font-size:12.5px;font-weight:700;color:var(--ink);
+    border:1.5px solid var(--ink);border-radius:4px;
+    padding:7px 14px;transition:background .14s,color .14s;
+  }
+  .card:hover .go{background:var(--ink);color:#fff}
+
+  footer{
+    margin-top:46px;padding-top:16px;border-top:1px solid var(--line);
+    font-size:12px;color:#9a927f;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Star Resonance Tools</div>
+    <h1>スタレゾ ツール置き場</h1>
+    <p>スタレゾ用のツールなど。主に自分用</p>
+    <div class="rule"></div>
+  </header>
+
+  <div class="section-label">ツール一覧</div>
+
+  <div class="list">
+    <a class="card" href="タクティクスボード.html">
+      <span class="num">01</span>
+      <span class="body">
+        <span class="name">タクティクスボード</span>
+        <span class="desc">ギミックの説明・散会図の作成など</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+
+    <a class="card" href="バトルイマジン図鑑.html">
+      <span class="num">02</span>
+      <span class="body">
+        <span class="name">バトルイマジン図鑑</span>
+        <span class="desc">凸毎の効果、英語・中国語での名称を確認できます</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+
+    <a class="card" href="海武器素材計算機.html">
+      <span class="num">03</span>
+      <span class="body">
+        <span class="name">海武器素材シミュ</span>
+        <span class="desc">現在の武器Lv、素材所持数から完成日を算出<br>目標日を設定し、素材の購入必要数を算出</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+
+    <a class="card" href="精錬素材シミュレーター.html">
+      <span class="num">04</span>
+      <span class="body">
+        <span class="name">精錬素材シミュ</span>
+        <span class="desc">素材を自作するか買うかの判断に</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+
+    <a class="card" href="翻訳拡張機能.html">
+      <span class="num">05</span>
+      <span class="body">
+        <span class="name">Maxroll翻訳ツール（ブラウザ拡張）</span>
+        <span class="desc">Maxroll用の翻訳ツール。スタレゾ特有の単語を正しい日本語に置き換えて翻訳します。他の英語サイトもある程度は翻訳されます</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+
+    <a class="card" href="ZDPS日本語化パッチ.html">
+      <span class="num">06</span>
+      <span class="body">
+        <span class="name">ZDPS日本語化パッチ</span>
+        <span class="desc">DPSメーター「ZDPS」を日本語化するパッチ。スキル名・バフ名・モンスター名などを翻訳</span>
+      </span>
+      <span class="go">開く →</span>
+    </a>
+  </div>
+
+  <footer>スタレゾ ツール置き場</footer>
+</div>
+</body>
+</html>

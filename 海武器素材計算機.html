@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海武器素材計算機</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --surface-2: #eeede7;
+    --border: #dcdbd3;
+    --border-strong: #c2c1b8;
+    --text: #1d1d1b;
+    --text-2: #66655e;
+    --text-3: #9a998f;
+    --accent: #1f5fa8;
+    --accent-bg: #e8f0fa;
+    --accent-soft: #f2f7fc;
+    --success: #0f6e56;
+    --success-bg: #e3f5ee;
+    --danger: #b23636;
+    --danger-bg: #fbeaea;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181816;
+      --surface: #242422;
+      --surface-2: #2d2d2a;
+      --border: #3a3a36;
+      --border-strong: #4c4c47;
+      --text: #f0efe9;
+      --text-2: #a6a59c;
+      --text-3: #6f6e66;
+      --accent: #6fa8e0;
+      --accent-bg: #15324f;
+      --accent-soft: #1b2a3a;
+      --success: #5dcaa5;
+      --success-bg: #0a4b3d;
+      --danger: #ef9a9a;
+      --danger-bg: #5e2020;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 20px 16px 48px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* ヘッダー */
+  header { margin-bottom: 18px; }
+  h1 { font-size: 19px; font-weight: 650; letter-spacing: -0.01em; }
+  .sub { font-size: 12.5px; color: var(--text-2); margin-top: 3px; }
+
+  /* セクション見出し */
+  .sec-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: none; color: var(--text-3);
+    margin: 0 0 8px 2px;
+  }
+
+  /* 設定バー（現在の状況） */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .fields { display: flex; flex-wrap: wrap; gap: 12px 18px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field > label { font-size: 11.5px; color: var(--text-2); font-weight: 500; }
+  .field input, .field select {
+    height: 36px;
+    font-size: 14px;
+    padding: 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+  }
+  .field input:focus, .field select:focus {
+    outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent);
+  }
+  .w-date { width: 158px; }
+  .w-num  { width: 110px; }
+  .w-sel  { width: 132px; }
+
+  /* シミュレーション帯 */
+  .sim {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 18px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-bg);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .sim .field > label { color: var(--accent); }
+  .sim-result {
+    display: flex; align-items: baseline; gap: 8px;
+    padding-left: 4px;
+  }
+  .sim-result .r-label { font-size: 12px; color: var(--text-2); }
+  .sim-result .r-val { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+
+  /* 注記 */
+  .note { font-size: 11.5px; color: var(--text-2); line-height: 1.7; margin-bottom: 18px; }
+  .note b { color: var(--text); font-weight: 600; }
+
+  /* テーブル */
+  .table-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px; margin-bottom: 8px;
+  }
+  .reset-btn {
+    font-size: 12px; padding: 5px 11px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius);
+    background: var(--surface); color: var(--text-2); cursor: pointer; font-family: inherit;
+  }
+  .reset-btn:hover { background: var(--surface-2); color: var(--text); }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .scroll-x { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    font-size: 11.5px; font-weight: 600; color: var(--text-2);
+    text-align: center; padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  thead th.th-other { text-align: left; }
+  tbody td { padding: 9px 10px; vertical-align: middle; border-bottom: 1px solid var(--border); text-align: center; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.row-target td { background: var(--accent-soft); }
+
+  .lv { font-weight: 650; white-space: nowrap; }
+  .need-val { font-variant-numeric: tabular-nums; }
+  .muted { color: var(--text-3); }
+  .shortage-zero { color: var(--success); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .shortage-val  { color: var(--danger);  font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ontime { color: var(--success); font-weight: 600; white-space: nowrap; }
+  .late   { color: var(--danger);  font-weight: 600; white-space: nowrap; }
+
+  .impl-date {
+    height: 32px; width: 150px;
+    font-size: 13px; padding: 0 8px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text); font-family: inherit;
+  }
+  .impl-date:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+  /* 他素材セル：1行1タグ */
+  td.other-cell { text-align: left; min-width: 230px; }
+  .tags { display: flex; flex-direction: column; align-items: stretch; gap: 3px; }
+  .tag {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-size: 12.5px; line-height: 1.45;
+    padding: 1px 0;
+    color: var(--text);
+  }
+  .tag-ro { /* 読み取り専用（デフォルト行）の素材行 */
+    font-size: 12.5px; line-height: 1.6; color: var(--text);
+  }
+  .tag-label { white-space: normal; word-break: break-word; }
+  .tag-x {
+    flex: none;
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: none; border-radius: 50%;
+    background: rgba(0,0,0,0.06); color: var(--text-2);
+    cursor: pointer; font-size: 10px; line-height: 1; font-family: inherit;
+  }
+  @media (prefers-color-scheme: dark) { .tag-x { background: rgba(255,255,255,0.12); } }
+  .tag-x:hover { background: var(--danger); color: #fff; }
+  .tag-input {
+    height: 30px;
+    font-size: 12.5px; padding: 0 8px;
+    border: 1px dashed var(--border-strong); border-radius: 6px;
+    background: transparent; color: var(--text); font-family: inherit;
+  }
+  .tag-input::placeholder { color: var(--text-3); }
+  .tag-input:focus { outline: 2px solid var(--accent); outline-offset: -1px; background: var(--surface); }
+  /* ホバー可能な端末では、行内の入力欄はホバー/フォーカス時のみ表示 */
+  @media (hover: hover) {
+    td.other-cell .tag-input { display: none; }
+    td.other-cell:hover .tag-input,
+    td.other-cell .tag-input:focus { display: block; }
+  }
+
+  /* 行削除 */
+  .del-btn {
+    font-size: 11.5px; padding: 4px 9px;
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    background: var(--surface); color: var(--danger); cursor: pointer; font-family: inherit;
+    white-space: nowrap;
+  }
+  .del-btn:hover { background: var(--danger-bg); }
+
+  /* 行を追加 */
+  .add-row {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+  }
+  .add-fields { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-start; margin-bottom: 12px; }
+  .add-row .field > label { font-size: 11.5px; color: var(--text-2); font-weight: 500; }
+  .add-tags {
+    width: 280px; max-width: 100%;
+    display: flex; flex-direction: column; gap: 4px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius);
+    background: var(--surface); padding: 7px; min-height: 36px;
+  }
+  .add-tags .tag-input { display: block; border-style: dashed; }
+  .add-btn {
+    font-size: 13.5px; font-weight: 600; padding: 9px 18px;
+    border: none; border-radius: var(--radius);
+    background: var(--accent); color: #fff; cursor: pointer; font-family: inherit;
+  }
+  .add-btn:hover { opacity: 0.92; }
+
+  .footer { margin-top: 22px; font-size: 11px; color: var(--text-3); text-align: center; }
+
+  /* モーダル */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: center; justify-content: center; padding: 20px; z-index: 100;
+  }
+  .modal-box {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 20px; max-width: 360px; width: 100%;
+    box-shadow: 0 12px 44px rgba(0,0,0,0.28);
+  }
+  .modal-msg { font-size: 14px; color: var(--text); margin-bottom: 18px; line-height: 1.6; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .modal-btn {
+    font-size: 13.5px; padding: 8px 16px; border-radius: var(--radius);
+    cursor: pointer; font-family: inherit; border: 1px solid var(--border-strong);
+  }
+  .modal-cancel { background: var(--surface); color: var(--text-2); }
+  .modal-cancel:hover { background: var(--surface-2); }
+  .modal-ok { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .modal-ok:hover { opacity: 0.92; }
+
+  @media (max-width: 560px) {
+    .container { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>海武器素材計算機</h1>
+</header>
+
+<div class="panel">
+  <div class="sec-label">現在の状況</div>
+  <div class="fields">
+    <div class="field">
+      <label for="today">現在日付</label>
+      <input class="w-date" type="date" id="today">
+    </div>
+    <div class="field">
+      <label for="owned">コア所持数</label>
+      <input class="w-num" type="number" id="owned" min="0" value="0">
+    </div>
+    <div class="field">
+      <label for="curLv">現在の海武器Lv</label>
+      <select class="w-sel" id="curLv"><option value="">なし</option></select>
+    </div>
+    <div class="field">
+      <label for="got">今週獲得済み</label>
+      <select class="w-sel" id="got">
+        <option value="未">未</option>
+        <option value="済">済</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="sim">
+  <div class="field">
+    <label for="simLv">目標の海武器Lv</label>
+    <select class="w-sel" id="simLv"></select>
+  </div>
+  <div class="field">
+    <label for="simDate">目標日付</label>
+    <input class="w-date" type="date" id="simDate">
+  </div>
+  <div class="sim-result">
+    <span class="r-label">必要購入数</span>
+    <span class="r-val" id="simBuy">—</span>
+  </div>
+</div>
+
+<p class="note">
+  毎週月曜にコアを4個入手する前提で計算します。実装日より前は獲得不可、今週獲得済の場合は次週月曜から起算します。<br>
+  <b>追加配布</b>：2026/06/29・07/06・07/13 にそれぞれ4個ずつ加算。<br>
+  実装日と他素材はテーブル内で編集でき、下のフォームから行を追加できます。現在日付以外は自動保存されます。
+</p>
+
+<div class="table-head">
+  <div class="sec-label" style="margin:0">武器レベル別の状況</div>
+  <button type="button" id="resetDates" class="reset-btn">デフォルトに戻す</button>
+</div>
+<div class="table-wrap">
+<div class="scroll-x">
+<table>
+<thead>
+<tr>
+  <th>武器Lv</th>
+  <th>実装日</th>
+  <th>コア必要数</th>
+  <th>不足数</th>
+  <th>達成予定日</th>
+  <th class="th-other">他素材</th>
+  <th></th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="add-row">
+  <div class="sec-label">行を追加</div>
+  <div class="add-fields">
+    <div class="field">
+      <label for="addLv">武器Lv</label>
+      <input class="w-num" type="number" id="addLv" min="1" placeholder="例: 300">
+    </div>
+    <div class="field">
+      <label for="addDate">実装日</label>
+      <input class="w-date" type="date" id="addDate">
+    </div>
+    <div class="field">
+      <label for="addNeed">コア必要数</label>
+      <input class="w-num" type="number" id="addNeed" min="0" placeholder="例: 40">
+    </div>
+    <div class="field">
+      <label>他素材（入力して Enter・複数可）</label>
+      <div class="add-tags" id="addTagsBox"></div>
+    </div>
+  </div>
+  <button type="button" id="addBtn" class="add-btn">＋ 行を追加</button>
+</div>
+
+<p class="footer">入力した内容はブラウザ上のみで計算・保存され、外部には送信されません。</p>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <p class="modal-msg" id="modalMsg"></p>
+    <div class="modal-actions">
+      <button type="button" class="modal-btn modal-cancel" id="modalCancel">キャンセル</button>
+      <button type="button" class="modal-btn modal-ok" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ===== デフォルトの武器データ =====
+const DEFAULT_WEAPONS = [
+  {lv:100, date:'2026-02-09', need:100, other:['御座純金250個（S1レイド素材）','10万バインドルーノ'], def:true},
+  {lv:140, date:'2026-03-19', need:20,  other:[], def:true},
+  {lv:160, date:'2026-05-04', need:25,  other:['煌めく砂金50個（S2レイド素材）'], def:true},
+  {lv:180, date:'2026-05-25', need:30,  other:['煌めく砂金100個（S2レイド素材）'], def:true},
+  {lv:220, date:'2026-07-16', need:0,   other:['10万バインドルーノ'], def:true},
+  {lv:240, date:'2026-07-16', need:25,  other:[], def:true},
+  {lv:260, date:'2026-08-10', need:30,  other:['幻曜赤金50個（S3レイド素材）'], def:true},
+  {lv:280, date:'2026-09-21', need:35,  other:['幻曜赤金100個（S3レイド素材）'], def:true},
+];
+
+// 追加配布（1回につき4個）
+const BONUSES = ['2026-06-29', '2026-07-06', '2026-07-13'];
+
+const STORAGE_KEY = 'umibuki_calc_v2';
+
+// 一意ID付与
+let _idSeq = 1;
+function toTags(v){
+  if(Array.isArray(v)) return v.map(s => String(s).trim()).filter(Boolean);
+  if(typeof v === 'string') return v.split('\n').map(s => s.trim()).filter(Boolean);
+  return [];
+}
+function withIds(list){
+  return list.map(w => ({ id: _idSeq++, lv: w.lv, date: w.date, need: w.need, other: toTags(w.other), def: !!w.def }));
+}
+
+// 現在の武器リスト（編集可能）
+let weapons = withIds(DEFAULT_WEAPONS);
+
+// ===== 日付ユーティリティ =====
+function parseDate(s){
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function fmtDate(dt){
+  return `${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`;
+}
+function nextMonday(dt){
+  const d = new Date(dt);
+  d.setHours(0,0,0,0);
+  const dow = d.getDay();
+  const diff = dow === 1 ? 0 : (dow === 0 ? 1 : 8 - dow);
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+function countMondays(startMon, endDate){
+  if(endDate < startMon) return 0;
+  const diff = Math.floor((endDate - startMon) / (24*3600*1000));
+  return Math.floor(diff / 7) + 1;
+}
+function bonusInRange(startDate, endDate){
+  let count = 0;
+  for(const b of BONUSES){
+    const bd = parseDate(b);
+    if(bd >= startDate && bd <= endDate) count++;
+  }
+  return count;
+}
+function isBonusDate(dt){
+  const s = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+  return BONUSES.includes(s);
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function tagsCellHtml(id, tags, editable){
+  if(!editable){
+    // デフォルト行：読み取り専用（テキスト表示のみ）
+    if(!tags.length) return '<span class="muted">—</span>';
+    const lines = tags.map(t => `<div class="tag-ro">${escapeHtml(t)}</div>`).join('');
+    return `<div class="tags">${lines}</div>`;
+  }
+  const chips = tags.map((t,i) =>
+    `<span class="tag"><span class="tag-label">${escapeHtml(t)}</span><button type="button" class="tag-x" data-id="${id}" data-idx="${i}" title="削除" aria-label="削除">✕</button></span>`
+  ).join('');
+  return `<div class="tags" data-id="${id}">${chips}<input type="text" class="tag-input" data-id="${id}" placeholder="素材を入力して Enter"></div>`;
+}
+
+// ===== 保存・復元 =====
+function saveState(){
+  const data = {
+    owned: document.getElementById('owned').value,
+    curLv: document.getElementById('curLv').value,
+    got: document.getElementById('got').value,
+    simLv: document.getElementById('simLv').value,
+    simDate: document.getElementById('simDate').value,
+    weapons: weapons.map(w => ({ lv: w.lv, date: w.date, need: w.need, other: w.other, def: w.def })),
+  };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+}
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(Array.isArray(data.weapons) && data.weapons.length){
+      weapons = withIds(data.weapons);
+    }
+    if(data.owned != null) document.getElementById('owned').value = data.owned;
+    if(data.got != null) document.getElementById('got').value = data.got;
+    // curLv/simLv はオプション生成後に復元するため保持
+    pendingCurLv = data.curLv;
+    pendingSimLv = data.simLv;
+    if(data.simDate != null) document.getElementById('simDate').value = data.simDate;
+  } catch(e){}
+}
+let pendingCurLv = null;
+let pendingSimLv = null;
+let focusTagId = null;     // タグ追加後にフォーカスを戻す対象
+let addTags = [];          // 行追加フォームの他素材タグ
+
+// ===== 確認モーダル =====
+function showModal(message, opts){
+  opts = opts || {};
+  const showCancel = opts.showCancel !== false;
+  return new Promise(resolve => {
+    const overlay = document.getElementById('modal');
+    const ok = document.getElementById('modalOk');
+    const cancel = document.getElementById('modalCancel');
+    document.getElementById('modalMsg').textContent = message;
+    cancel.style.display = showCancel ? '' : 'none';
+    overlay.style.display = 'flex';
+    function cleanup(val){
+      overlay.style.display = 'none';
+      ok.removeEventListener('click', onOk);
+      cancel.removeEventListener('click', onCancel);
+      resolve(val);
+    }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    ok.addEventListener('click', onOk);
+    cancel.addEventListener('click', onCancel);
+  });
+}
+const showConfirm = (m) => showModal(m, { showCancel: true });
+const showAlert = (m) => showModal(m, { showCancel: false });
+
+async function resetAll(){
+  const ok = await showConfirm('武器データ（Lv・実装日・必要数・他素材）をデフォルトに戻します。よろしいですか？');
+  if(!ok) return;
+  weapons = withIds(DEFAULT_WEAPONS);
+  saveState();
+  populateSelects();
+  calc();
+}
+
+// ===== セレクトメニュー生成 =====
+function populateSelects(){
+  const sorted = [...weapons].sort((a,b) => a.lv - b.lv);
+  const curSel = document.getElementById('curLv');
+  const simSel = document.getElementById('simLv');
+  const prevCur = pendingCurLv != null ? pendingCurLv : curSel.value;
+  const prevSim = pendingSimLv != null ? pendingSimLv : simSel.value;
+  pendingCurLv = null; pendingSimLv = null;
+
+  curSel.innerHTML = '<option value="">なし</option>' +
+    sorted.map(w => `<option value="${w.lv}">Lv.${w.lv}</option>`).join('');
+  simSel.innerHTML =
+    sorted.map(w => `<option value="${w.lv}">Lv.${w.lv}</option>`).join('');
+
+  // 選択値を復元（存在すれば）
+  if([...curSel.options].some(o => o.value === prevCur)) curSel.value = prevCur;
+  else curSel.value = '';
+  if([...simSel.options].some(o => o.value === prevSim)) simSel.value = prevSim;
+  else if(simSel.options.length) simSel.selectedIndex = Math.min(3, simSel.options.length - 1);
+}
+
+// ===== メイン計算 =====
+function calc(){
+  const todayStr = document.getElementById('today').value;
+  if(!todayStr) return;
+  const today = parseDate(todayStr);
+  const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
+  const curLvStr = document.getElementById('curLv').value;
+  const curLv = curLvStr === '' ? null : parseInt(curLvStr);
+  const got = document.getElementById('got').value;
+
+  let firstMon;
+  const todayDow = today.getDay();
+  if(got === '済'){
+    if(todayDow === 1){
+      firstMon = new Date(today);
+      firstMon.setDate(firstMon.getDate() + 7);
+    } else {
+      firstMon = nextMonday(today);
+    }
+  } else {
+    firstMon = new Date(today);
+    firstMon.setHours(0,0,0,0);
+    const diff = todayDow === 0 ? 6 : todayDow - 1;
+    firstMon.setDate(firstMon.getDate() - diff);
+  }
+  firstMon.setHours(0,0,0,0);
+
+  // Lv昇順で累計計算
+  const sorted = [...weapons].sort((a,b) => a.lv - b.lv);
+
+  let cumNeed = 0;
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  const simLv = parseInt(document.getElementById('simLv').value);
+  const rows = [];
+
+  for(const w of sorted){
+    const need = (curLv !== null && curLv >= w.lv) ? 0 : (parseInt(w.need) || 0);
+    cumNeed += need;
+    const implDate = parseDate(w.date);
+    const shortage = Math.max(0, cumNeed - owned);
+
+    let achDate;
+    if(shortage === 0){
+      achDate = implDate;
+    } else {
+      let gained = 0;
+      const mon = new Date(firstMon);
+      achDate = null;
+      for(let i = 0; i < 520; i++){
+        gained += 4;
+        if(isBonusDate(mon)) gained += 4;
+        if(gained >= shortage){
+          achDate = new Date(mon);
+          break;
+        }
+        mon.setDate(mon.getDate() + 7);
+      }
+      if(achDate && achDate < implDate) achDate = implDate;
+    }
+    const onTime = achDate && achDate <= implDate;
+
+    rows.push({w, shortage});
+
+    const tr = document.createElement('tr');
+    if(w.lv === simLv) tr.className = 'row-target';
+    const delCell = w.def
+      ? '<td></td>'
+      : `<td><button type="button" class="del-btn" data-id="${w.id}">行削除</button></td>`;
+    tr.innerHTML = `
+      <td class="lv">Lv.${w.lv}</td>
+      <td><input type="date" class="cell-input impl-date" data-id="${w.id}" data-field="date" value="${w.date}"></td>
+      <td>${(parseInt(w.need)||0) > 0 ? '<span class="need-val">'+(parseInt(w.need)||0)+'</span>' : '<span class="muted">—</span>'}</td>
+      <td class="${shortage === 0 ? 'shortage-zero' : 'shortage-val'}">${shortage}</td>
+      <td class="${onTime ? 'ontime' : 'late'}">${achDate ? fmtDate(achDate) : '—'}</td>
+      <td class="other-cell">${tagsCellHtml(w.id, w.other, !w.def)}</td>
+      ${delCell}
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // タグ追加直後のフォーカス復帰
+  if(focusTagId != null){
+    const inp = tbody.querySelector(`.tag-input[data-id="${focusTagId}"]`);
+    if(inp) inp.focus();
+    focusTagId = null;
+  }
+
+  updateSim(rows, firstMon);
+}
+
+function updateSim(rows, firstMon){
+  const simLv = parseInt(document.getElementById('simLv').value);
+  const simDateStr = document.getElementById('simDate').value;
+  const target = rows.find(r => r.w.lv === simLv);
+  if(!target){ document.getElementById('simBuy').textContent = '—'; return; }
+
+  if(!simDateStr){
+    document.getElementById('simBuy').textContent =
+      target.shortage > 0 ? target.shortage + '個' : '0個（達成済）';
+    return;
+  }
+
+  const simDate = parseDate(simDateStr);
+  const mondays = countMondays(firstMon, simDate);
+  const bonusCount = bonusInRange(firstMon, simDate);
+  const gain = mondays * 4 + bonusCount * 4;
+  const buy = Math.max(0, target.shortage - gain);
+  document.getElementById('simBuy').textContent =
+    buy > 0 ? buy + '個' : '0個（購入不要）';
+}
+
+// ===== 行の追加・編集・削除 =====
+function renderAddTags(){
+  const box = document.getElementById('addTagsBox');
+  const chips = addTags.map((t,i) =>
+    `<span class="tag"><span class="tag-label">${escapeHtml(t)}</span><button type="button" class="tag-x" data-addidx="${i}" title="削除" aria-label="削除">✕</button></span>`
+  ).join('');
+  box.innerHTML = chips + `<input type="text" class="tag-input" id="addTagInput" placeholder="素材を入力して Enter">`;
+}
+
+async function addRow(){
+  const lv = parseInt(document.getElementById('addLv').value);
+  const date = document.getElementById('addDate').value;
+  const need = parseInt(document.getElementById('addNeed').value) || 0;
+
+  if(!lv){ await showAlert('武器Lvを入力してください。'); return; }
+  if(!date){ await showAlert('実装日を入力してください。'); return; }
+  if(weapons.some(w => w.lv === lv)){
+    const ok = await showConfirm(`Lv.${lv} は既に存在します。追加しますか？`);
+    if(!ok) return;
+  }
+
+  weapons.push({ id: _idSeq++, lv, date, need, other: addTags.slice(), def: false });
+  // フォームをクリア
+  document.getElementById('addLv').value = '';
+  document.getElementById('addDate').value = '';
+  document.getElementById('addNeed').value = '';
+  addTags = [];
+  renderAddTags();
+
+  saveState();
+  populateSelects();
+  calc();
+}
+
+async function deleteRow(id){
+  const w = weapons.find(x => x.id === id);
+  if(!w) return;
+  const ok = await showConfirm(`Lv.${w.lv} の行を削除しますか？`);
+  if(!ok) return;
+  weapons = weapons.filter(x => x.id !== id);
+  saveState();
+  populateSelects();
+  calc();
+}
+
+function updateField(id, field, value){
+  const w = weapons.find(x => x.id === id);
+  if(!w) return;
+  if(field === 'date'){
+    if(value) w.date = value;
+  }
+  saveState();
+  calc();
+}
+
+// 行（既存武器）の他素材タグ操作
+function addTagToWeapon(id, text){
+  const t = text.trim();
+  if(!t) return;
+  const w = weapons.find(x => x.id === id);
+  if(!w) return;
+  w.other.push(t);
+  focusTagId = id;
+  saveState();
+  calc();
+}
+function removeTagFromWeapon(id, idx){
+  const w = weapons.find(x => x.id === id);
+  if(!w) return;
+  w.other.splice(idx, 1);
+  focusTagId = id;
+  saveState();
+  calc();
+}
+
+// ===== 初期化 =====
+const now = new Date();
+const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+document.getElementById('today').value = todayStr;        // 現在日付は常に当日・保存しない
+document.getElementById('simDate').value = todayStr;       // 保存があれば後で上書き
+
+loadState();        // 前回入力を復元（現在日付以外）
+populateSelects();  // セレクトを生成し選択を復元
+
+// 上部の入力欄（現在日付含む。現在日付は保存対象外だが再計算は必要）
+['today','owned','curLv','got','simLv','simDate'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => { saveState(); calc(); });
+});
+
+// テーブル内の編集（委任）
+const tbodyEl = document.getElementById('tbody');
+tbodyEl.addEventListener('change', (e) => {
+  const t = e.target;
+  if(t.dataset && t.dataset.field){
+    updateField(parseInt(t.dataset.id), t.dataset.field, t.value);
+  }
+});
+tbodyEl.addEventListener('click', (e) => {
+  if(e.target.classList.contains('del-btn')){
+    deleteRow(parseInt(e.target.dataset.id));
+  } else if(e.target.classList.contains('tag-x')){
+    removeTagFromWeapon(parseInt(e.target.dataset.id), parseInt(e.target.dataset.idx));
+  }
+});
+// タグ入力でEnter確定（既存行）
+tbodyEl.addEventListener('keydown', (e) => {
+  if(e.target.classList.contains('tag-input') && e.key === 'Enter'){
+    e.preventDefault();
+    addTagToWeapon(parseInt(e.target.dataset.id), e.target.value);
+  }
+});
+
+// 行追加フォームの他素材タグ
+const addTagsBox = document.getElementById('addTagsBox');
+addTagsBox.addEventListener('keydown', (e) => {
+  if(e.target.id === 'addTagInput' && e.key === 'Enter'){
+    e.preventDefault();
+    const v = e.target.value.trim();
+    if(v){ addTags.push(v); renderAddTags(); document.getElementById('addTagInput').focus(); }
+  }
+});
+addTagsBox.addEventListener('click', (e) => {
+  if(e.target.classList.contains('tag-x') && e.target.dataset.addidx != null){
+    addTags.splice(parseInt(e.target.dataset.addidx), 1);
+    renderAddTags();
+  }
+});
+renderAddTags();
+
+// 行追加・リセット
+document.getElementById('addBtn').addEventListener('click', addRow);
+document.getElementById('resetDates').addEventListener('click', resetAll);
+
+calc();
+
+</script>
+</body>
+</html>

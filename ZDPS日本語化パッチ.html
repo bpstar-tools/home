@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZDPS 日本語化パッチ</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    background:#f4f1ea;
+    color:#2b2b2b;
+    line-height:1.85;
+    padding:0 18px 90px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  .back{display:inline-block;color:#7a7a7a;text-decoration:none;font-size:13px;margin:24px 0 10px}
+  .back:hover{color:#2b2b2b;text-decoration:underline}
+
+  header{border-bottom:2px solid #2b2b2b;padding-bottom:18px;margin-bottom:8px}
+  .kicker{font-size:11px;letter-spacing:.32em;color:#9a4b2e;font-weight:700;text-transform:uppercase;margin-bottom:10px}
+  header h1{font-size:24px;font-weight:700;line-height:1.4}
+  header .lead{font-size:14px;color:#6b6b6b;margin-top:10px}
+
+  h2{font-size:18px;font-weight:700;margin:36px 0 12px;border-left:5px solid #2b2b2b;padding-left:10px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0 10px 22px}
+  li{margin:7px 0}
+  code{background:#e7e1d3;padding:1px 6px;border-radius:3px;font-size:.9em;font-family:"SFMono-Regular",Consolas,monospace}
+  strong{font-weight:700}
+  a{color:#9a4b2e}
+  a:hover{color:#7a3a22}
+
+  .summary{background:#fbf9f3;border:1px solid #ddd6c6;border-radius:6px;padding:14px 18px;margin:16px 0}
+  .summary p{margin:6px 0;font-size:14px}
+  .note{background:#fbf6e7;border-left:4px solid #c9a23a;padding:12px 16px;margin:16px 0;font-size:13.5px;color:#6b5e35}
+
+  .dl{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0}
+  .btn{
+    flex:1;min-width:240px;text-decoration:none;color:#2b2b2b;
+    background:#fff;border:1.5px solid #2b2b2b;border-radius:6px;
+    padding:16px 18px;transition:.12s;
+  }
+  .btn:hover{background:#2b2b2b;color:#fff}
+  .btn .big{display:block;font-size:16px;font-weight:700}
+  .btn .small{display:block;font-size:12px;color:#8a8a8a;margin-top:2px}
+  .btn:hover .small{color:#cfcabb}
+
+  footer{margin-top:50px;padding-top:16px;border-top:1px solid #d9d3c5;font-size:12px;color:#9a927f}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 一覧に戻る</a>
+
+  <header>
+    <div class="kicker">ZDPS Patch</div>
+    <h1>ZDPS 日本語化パッチ</h1>
+    <p class="lead">ZDPS（BPSR-ZDPS）― Blue Protocol: Star Resonance の DPS メーター ― の日本語化ツールです。</p>
+  </header>
+
+  <div class="summary">
+    <p>ZDPS のソースを取得して日本語パッチを当て、再ビルドした日本語版を作ります。</p>
+    <p>フォント（かな・漢字）の表示修正、UI 文言の翻訳、スキル名・バフ名・モンスター名などの日本語化を行います。</p>
+  </div>
+
+  <h2>ダウンロード</h2>
+  <div class="dl">
+    <a class="btn" href="https://github.com/bpstar-tools/translate-ZDPS/releases/download/%E9%85%8D%E5%B8%83/ZDPS_._v0.1.7.2.zip">
+      <span class="big">ZDPS 日本語化 v0.1.7.2</span>
+      <span class="small">ZDPS_日本語化_v0.1.7.2.zip（約 47 MB）</span>
+    </a>
+  </div>
+
+  <h2>導入手順</h2>
+  <ol>
+    <li>上のボタンから最新の <strong>ZDPS_日本語化_vX.X.X.X.zip</strong> をダウンロードします。</li>
+    <li>zip を<strong>すべて解凍</strong>します。</li>
+    <li>ZDPS を一度<strong>終了</strong>します。</li>
+    <li><strong>「日本語化を適用.bat」</strong>をダブルクリックします。</li>
+    <li>自分の ZDPS フォルダ（<code>BPSR-ZDPS.exe</code> がある場所）を選んで「<strong>日本語化を適用</strong>」します。</li>
+    <li>ZDPS を起動 → 日本語になっています。</li>
+  </ol>
+
+  <h2>元に戻すには</h2>
+  <p>適用時に作られる <code>_JP_backup_日付</code> フォルダの中身を、元の場所へ戻します。設定やセーブデータは上書きされません。</p>
+  <div class="note"><strong>注意:</strong> 配布 zip は<strong>特定バージョン専用</strong>です。インストール済み ZDPS とバージョンが違うと警告が出ます。</div>
+
+  <h2>ライセンス / 注意</h2>
+  <ul>
+    <li>このリポジトリのスクリプト類は <strong>MIT ライセンス</strong>です。</li>
+    <li>ZDPS 本体も MIT ライセンスです。再配布する配布 zip には ZDPS のライセンス表記を同梱してください。</li>
+    <li>スキル名・バフ名などの表示テキストは、ゲーム運営／開発元の著作物に由来します。個人・少人数での利用を想定しています。</li>
+    <li>本ツールは非公式の有志ツールであり、Blue Protocol: Star Resonance 運営および ZDPS 開発元とは無関係です。</li>
+  </ul>
+
+  <footer>
+    スタレゾ ツール置き場
+  </footer>
+</div>
+</body>
+</html>
