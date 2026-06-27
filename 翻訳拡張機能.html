@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタレゾMaxroll 英語→日本語 翻訳ツール（ブラウザ拡張）</title>
+<title>スタレゾMaxroll翻訳（英語→日本語）ブラウザ拡張</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{
@@ -23,7 +23,6 @@
   header .lead{font-size:14px;color:#6b6b6b;margin-top:10px}
 
   h2{font-size:18px;font-weight:700;margin:36px 0 12px;border-left:5px solid #2b2b2b;padding-left:10px}
-  h3{font-size:15px;font-weight:700;margin:22px 0 6px}
   p{margin:10px 0}
   ul,ol{margin:10px 0 10px 22px}
   li{margin:6px 0}
@@ -38,7 +37,7 @@
 
   .dl{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0}
   .btn{
-    flex:1;min-width:220px;text-decoration:none;color:#2b2b2b;
+    flex:1;min-width:240px;text-decoration:none;color:#2b2b2b;
     background:#fff;border:1.5px solid #2b2b2b;border-radius:6px;
     padding:16px 18px;transition:.12s;
   }
@@ -47,24 +46,13 @@
   .btn .small{display:block;font-size:12px;color:#8a8a8a;margin-top:2px}
   .btn:hover .small{color:#cfcabb}
 
-  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
-  th,td{text-align:left;padding:9px 12px;border:1px solid #ddd6c6;vertical-align:top}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border:1px solid #ddd6c6;vertical-align:top}
   th{background:#ece7db;font-weight:700;white-space:nowrap}
+  .ok{color:#1c7c4a;font-weight:700}
+  .ng{color:#b23636;font-weight:700}
 
   footer{margin-top:50px;padding-top:16px;border-top:1px solid #d9d3c5;font-size:12px;color:#9a927f}
-
-  /* install tabs */
-  .tabs{display:flex;gap:4px;border-bottom:2px solid #ddd6c6;margin:4px 0 0}
-  .tab{
-    appearance:none;background:none;border:none;font:inherit;cursor:pointer;
-    padding:10px 20px;font-size:14px;font-weight:700;color:#7a7a7a;
-    border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .12s,border-color .12s;
-  }
-  .tab:hover{color:#2b2b2b}
-  .tab.active{color:#9a4b2e;border-bottom-color:#9a4b2e}
-  .tabpanel{display:none;padding-top:6px}
-  .tabpanel.active{display:block}
-  .tabpanel h3:first-child{margin-top:14px}
 </style>
 </head>
 <body>
@@ -73,130 +61,59 @@
 
   <header>
     <div class="kicker">Browser Extension</div>
-    <h1>スタレゾMaxroll 英語 → 日本語 翻訳ツール</h1>
-    <p class="lead">「スターレゾナンス（Star Resonance / BPSR）」の Maxroll の Web ページを日本語化するブラウザ拡張です（<strong>英語→日本語専用</strong>）。</p>
+    <h1>スタレゾMaxroll翻訳（英語 → 日本語）</h1>
+    <p class="lead">「スターレゾナンス（Star Resonance / BPSR）」の Maxroll ビルドガイドを日本語化するブラウザ拡張です。Maxroll をそれなりに自然な形で翻訳します（<strong>英語→日本語専用</strong>）。</p>
   </header>
 
   <div class="summary">
-    <p>ゲーム用語（公式名）と説明文を、専用の辞書で正確な日本語に置換します。</p>
-    <p>全文翻訳は翻訳エンジンを選んで使用（<strong>Chrome内蔵翻訳＝無料</strong> / <strong>DeepL＝高品質</strong>）。どちらも用語は辞書どおりに固定されます。</p>
-    <p><code>maxroll.gg</code> では自動発動。その他の英語サイトでも手動（ボタン / Alt+T / 右クリック）で使えます。</p>
+    <p>対象は <code>maxroll.gg/blue-protocol/</code> 配下のみ。他ゲームのページでは動作しません。</p>
+    <p>動作モードは「自動（開くと翻訳）／手動（ボタン・Alt+T）」を選べます。</p>
+    <p>端末内AIの翻訳のため、文法はやや不自然になることがあります。</p>
   </div>
+
+  <h2>対応ブラウザ</h2>
+  <table>
+    <tr><th>ブラウザ</th><th>対応</th><th>備考</th></tr>
+    <tr><td><strong>Chrome</strong>（デスクトップ・138以降）</td><td><span class="ok">✅</span></td><td>Chrome内蔵翻訳APIを使用。初回のみ翻訳モデルをDL</td></tr>
+    <tr><td>Edge</td><td><span class="ng">❌</span></td><td>内蔵翻訳APIが使えず正しく動作しません</td></tr>
+    <tr><td>Firefox</td><td><span class="ng">❌</span></td><td>—</td></tr>
+  </table>
+  <div class="note">このツールは <strong>Chrome の内蔵翻訳</strong>で翻訳します。</div>
 
   <h2>ダウンロード</h2>
   <div class="dl">
     <a class="btn" href="https://github.com/pupupue-3/bpsr-translate-extension/releases/download/%E6%8B%A1%E5%BC%B5%E6%A9%9F%E8%83%BD/bpsr-translate-chrome.zip">
-      <span class="big">Chrome / Edge 版</span>
+      <span class="big">Chrome 版</span>
       <span class="small">bpsr-translate-chrome.zip（約 62 KB）</span>
     </a>
-    <a class="btn" href="https://github.com/pupupue-3/bpsr-translate-extension/releases/download/%E6%8B%A1%E5%BC%B5%E6%A9%9F%E8%83%BD/bpsr-translate-firefox.xpi">
-      <span class="big">Firefox 版</span>
-      <span class="small">bpsr-translate-firefox.xpi（約 62 KB）</span>
-    </a>
   </div>
 
-  <h2>翻訳エンジンとブラウザ別おすすめ</h2>
-  <p>全文翻訳のエンジンはポップアップの「翻訳エンジン」で選びます。</p>
-  <table>
-    <tr><th>エンジン</th><th>料金</th><th>品質</th><th>必要環境</th></tr>
-    <tr><td><strong>Chrome内蔵翻訳</strong></td><td>無料・無制限・キー不要</td><td>普通（端末内AI）</td><td><strong>Chrome 138以降・デスクトップ</strong>。初回のみモデルDL</td></tr>
-    <tr><td><strong>DeepL</strong></td><td>無料枠 月50万文字</td><td>高い・自然</td><td>DeepL APIキー</td></tr>
-    <tr><td>辞書のみ</td><td>無料</td><td>用語だけ</td><td>なし</td></tr>
-  </table>
-  <table>
-    <tr><th>ブラウザ</th><th>おすすめ</th></tr>
-    <tr><td><strong>Chrome</strong></td><td>どちらでもOK（<strong>Chrome内蔵翻訳＝無料</strong> が手軽 / 文法重視なら DeepL）</td></tr>
-    <tr><td><strong>Edge</strong></td><td><strong>DeepL 推奨</strong>（内蔵翻訳APIが使えないため）</td></tr>
-    <tr><td><strong>Firefox</strong></td><td><strong>DeepL 推奨</strong>（内蔵翻訳APIが無いため）</td></tr>
-  </table>
-
-  <h2>インストール方法</h2>
-  <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="chrome" role="tab">Chrome</button>
-    <button class="tab" data-tab="edge" role="tab">Edge</button>
-    <button class="tab" data-tab="firefox" role="tab">Firefox</button>
-  </div>
-
-  <div class="tabpanel active" id="tab-chrome" role="tabpanel">
-    <ol>
-      <li><strong>Chrome / Edge 版</strong>（zip）をダウンロードして<strong>解凍</strong>します。</li>
-      <li><code>chrome://extensions</code> を開きます。</li>
-      <li>右上の「<strong>デベロッパーモード</strong>」を ON にします。</li>
-      <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」→ 解凍した <strong>bpsr-translate-chrome</strong> フォルダを選択します。</li>
-      <li>ツールバーにアイコンが出れば完了です。</li>
-    </ol>
-    <div class="note">解凍フォルダは消さないでください。更新時は新しい zip を解凍し、拡張ページで <strong>リロード（↻）</strong> してください。</div>
-  </div>
-
-  <div class="tabpanel" id="tab-edge" role="tabpanel">
-    <ol>
-      <li><strong>Chrome / Edge 版</strong>（zip）をダウンロードして<strong>解凍</strong>します。</li>
-      <li><code>edge://extensions</code> を開きます。</li>
-      <li>左下の「<strong>開発者モード</strong>」を ON にします。</li>
-      <li>「<strong>展開して読み込み</strong>」→ 解凍した <strong>bpsr-translate-chrome</strong> フォルダを選択します。</li>
-      <li>ツールバーにアイコンが出れば完了です。</li>
-    </ol>
-    <div class="note">解凍フォルダは消さないでください。更新時は新しい zip を解凍し、拡張ページで <strong>リロード（↻）</strong> してください。<br>Edge は内蔵翻訳APIが使えないため、全文翻訳は <strong>DeepL 推奨</strong> です。</div>
-  </div>
-
-  <div class="tabpanel" id="tab-firefox" role="tabpanel">
-    <p>通常版 Firefox は未署名拡張を常用できないため、<strong>Developer Edition / Nightly</strong> を前提とします。</p>
-    <ol>
-      <li><code>about:config</code> を開き、<code>xpinstall.signatures.required</code> を <strong>false</strong> に設定します（最初の一度だけ）。</li>
-      <li><strong>Firefox 版</strong>（<code>.xpi</code>）をダウンロードします。</li>
-      <li><code>about:addons</code> → 歯車 ⚙ →「<strong>ファイルからアドオンをインストール</strong>」→ <code>.xpi</code> を選択します。</li>
-    </ol>
-    <div class="note">Firefox は内蔵翻訳APIが無いため、全文翻訳は <strong>DeepL 推奨</strong> です。</div>
-  </div>
-
-  <h2>初期設定</h2>
-  <p>拡張アイコンをクリックして設定します。</p>
-  <table>
-    <tr><th>翻訳エンジン</th><td>Chrome内蔵 / DeepL / 辞書のみ（既定は Chrome内蔵）</td></tr>
-    <tr><th>DeepL APIキー</th><td>DeepL を選んだ時のみ必要（取得方法は後述）。</td></tr>
-    <tr><th>動作モード</th><td>「手動」=ボタン / Alt+T で発動。「常に翻訳」=開くと自動。</td></tr>
-    <tr><th>自動発動サイト</th><td>記載サイトは開くと自動発動（既定 <code>maxroll.gg</code>）。</td></tr>
-  </table>
-  <div class="note"><strong>手動で翻訳する3つの方法</strong>：ポップアップの「▶ このページを今すぐ翻訳」／ <strong>Alt+T</strong> ／ 右クリック →「このページを翻訳」。</div>
-
-  <h2>Chrome内蔵翻訳を使う（無料）</h2>
+  <h2>インストール（Chrome）</h2>
   <ol>
-    <li>ポップアップで翻訳エンジン「<strong>Chrome内蔵翻訳</strong>」を選んで保存します（既定で選択済み）。</li>
-    <li>maxroll のページを開きます。</li>
-    <li><strong>初回のみ</strong>、画面上部に「▶ クリックでChrome翻訳を有効化（初回のみモデルDL）」のバナーが出るので<strong>クリック</strong>します。
-      <ul><li>クリックで翻訳モデルがダウンロードされます（数十MB・一度きり）。完了後そのまま全文翻訳されます。</li></ul>
-    </li>
-    <li>2回目以降は自動で全文翻訳されます。</li>
+    <li>上の <strong>Chrome 版</strong>（zip）をダウンロードして<strong>解凍</strong>します。</li>
+    <li><code>chrome://extensions</code> を開きます。</li>
+    <li>右上の「<strong>デベロッパーモード</strong>」を ON にします。</li>
+    <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」→ 解凍した <strong>bpsr-translate-chrome</strong> フォルダを選択します。</li>
+    <li>ツールバーにアイコンが出れば完了です。</li>
   </ol>
-  <div class="note">Chrome 138未満や Edge / Firefox では内蔵翻訳が使えず、自動で「辞書のみ」になります。その場合は DeepL を使ってください。</div>
 
-  <h2>DeepL を使う（高品質・推奨：Edge / Firefox）</h2>
-  <p>辞書に無い文章も DeepL が翻訳し、ゲーム用語は辞書どおりに固定されます。</p>
-  <h3>DeepL 無料APIキーの取得手順</h3>
+  <h2>使い方</h2>
   <ol>
-    <li><a href="https://www.deepl.com/pro-api">DeepL API（開発者向け）</a> を開き、アカウントを作成します（既にDeepLアカウントがあればログイン）。</li>
-    <li>プランは <strong>「DeepL API Free」</strong> を選択します（<strong>月50万文字まで無料</strong>）。
-      <ul><li>登録時に本人確認のためクレジットカード情報を求められる場合がありますが、<strong>無料プランは課金されません</strong>（上限超過時も自動課金されず停止します）。</li></ul>
-    </li>
-    <li>ログイン後、<a href="https://www.deepl.com/your-account/keys">アカウントのAPIキー画面</a> を開きます。</li>
-    <li>表示される <strong>Authentication Key</strong>（認証キー）をコピーします。
-      <ul><li>無料プランのキーは末尾が <strong><code>:fx</code></strong>（例: <code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx</code>）。</li></ul>
-    </li>
-    <li>拡張ポップアップで翻訳エンジン「<strong>DeepL</strong>」を選び、<strong>DeepL APIキー</strong>欄に貼り付けて「<strong>保存して再読み込み</strong>」します。</li>
+    <li><code>maxroll.gg/blue-protocol/</code> を開きます（スタレゾ関連であれば別のページでも可）。</li>
+    <li><strong>初回のみ</strong>、画面上部に「▶ クリックで翻訳を有効化（初回のみモデルDL）」のバナーが出るので<strong>クリック</strong>します（翻訳モデルがダウンロードされます）。</li>
+    <li>2回目以降は自動で翻訳されます（既定は自動モード）。</li>
   </ol>
+  <div class="note"><strong>手動で翻訳：</strong>拡張アイコン →「▶ このページを今すぐ翻訳」、またはショートカット <strong>Alt+T</strong>。</div>
+
+  <h2>設定（拡張アイコンをクリック）</h2>
+  <table>
+    <tr><th>拡張を有効にする</th><td>ON / OFF</td></tr>
+    <tr><th>動作モード</th><td>「自動」=開くと翻訳（既定）／「手動」=ボタン・Alt+T で発動</td></tr>
+  </table>
 
   <footer>
     スタレゾ ツール置き場
   </footer>
 </div>
-<script>
-  document.querySelectorAll('.tab').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var t = btn.dataset.tab;
-      document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === t); });
-      document.querySelectorAll('.tabpanel').forEach(function(p){ p.classList.toggle('active', p.id === 'tab-' + t); });
-    });
-  });
-</script>
 </body>
 </html>
